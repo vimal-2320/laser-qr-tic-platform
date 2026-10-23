@@ -30,7 +30,7 @@ import {
 
 export function App() {
   // Navigation Tab State (Replaces endless vertical scrolling)
-  const [activeTab, setActiveTab] = useState<NavigationTab>('3d-workstation');
+  const [activeTab, setActiveTab] = useState<NavigationTab>('workstation-simulator');
 
   // Shared active demo component record
   const [activeComponent, setActiveComponent] = useState<ComponentRecord>(INITIAL_DEMO_COMPONENTS[0]);
@@ -47,7 +47,7 @@ export function App() {
   const [hardwareConfig, setHardwareConfig] = useState<HardwareBridgeConfig>(hardwareAdapter.getConfig());
 
   const handleRunSimulation = () => {
-    setActiveTab('laser-marking');
+    setActiveTab('workstation-simulator');
     setIsSimulatingMarking(true);
   };
 
@@ -83,89 +83,77 @@ export function App() {
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
         
         {/* ==================================================== */}
-        {/* TAB 1: 3D DIGITAL TWIN & INSPECTION WORKSTATION */}
+        {/* COMBINED 3D WORKSTATION & MARKING SIMULATOR */}
         {/* ==================================================== */}
-        {activeTab === '3d-workstation' && (
-          <div className="space-y-6">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2 border-b border-industrial-800">
+        {activeTab === 'workstation-simulator' && (
+          <div className="space-y-8">
+            {/* Unified Workspace Header */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-3 border-b border-industrial-800">
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyanAccent/10 text-cyanAccent border border-cyanAccent/30">
-                    CONSOLE MODULE 01
+                    UNIFIED CNC WORKSPACE
                   </span>
                   <span className="text-xs font-mono text-industrial-400">
-                    INTERACTIVE 3D CNC WORKSTATION & SUBSYSTEM INSPECTOR
+                    INTERACTIVE 3D DIGITAL TWIN + REAL-TIME LASER SIMULATOR
                   </span>
                 </div>
                 <h2 className="text-2xl font-bold text-white tracking-wide">
-                  Desktop CNC Laser Marking Workstation
+                  3D CNC Laser Workstation & Marking Simulator
                 </h2>
                 <p className="text-xs text-industrial-300 mt-0.5">
-                  Inspect the rigid chassis, linear motion rods, ESP32 controller, and dynamic 3D track fittings with live spark emission during engraving runs.
+                  Operate the QR-to-G-code generator below and observe the 3D machine head execute real-time laser engraving with sparks on the chosen track fitting above simultaneously.
                 </p>
               </div>
 
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => setActiveTab('laser-marking')}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-cyanAccent text-black font-mono font-bold text-xs hover:bg-cyan-300 transition shadow-cyan-glow"
-                >
-                  <Zap className="w-4 h-4 fill-current" />
-                  <span>LAUNCH ENGRAVING SIMULATOR ➔</span>
-                </button>
+              <div className="flex items-center gap-2 text-xs font-mono">
+                <span className={`px-2.5 py-1 rounded-lg border font-semibold flex items-center gap-1.5 ${
+                  isSimulatingMarking 
+                    ? 'bg-red-500/10 border-red-500/40 text-red-400 animate-pulse'
+                    : 'bg-industrial-900 border-industrial-700 text-industrial-300'
+                }`}>
+                  <span className={`w-2 h-2 rounded-full ${isSimulatingMarking ? 'bg-red-500 animate-ping' : 'bg-emerald-400'}`} />
+                  <span>{isSimulatingMarking ? `ENGRAVING ACTIVE (${Math.round(markingProgress * 100)}%)` : 'MACHINE READY (STANDBY)'}</span>
+                </span>
               </div>
             </div>
 
-            {/* 3D Scene + Dedicated Inspection Column Component */}
-            <MachineViewer
-              isSimulatingMarking={isSimulatingMarking}
-              markingProgress={markingProgress}
-              selectedSubsystemId={selectedSubsystemId}
-              onSelectSubsystem={(sub) => setSelectedSubsystemId(sub ? sub.id : null)}
-              componentCategory={activeComponent.category}
-              currentCoord={markingCoord}
-            />
-          </div>
-        )}
-
-        {/* ==================================================== */}
-        {/* TAB 2: LASER MARKING & G-CODE SIMULATOR */}
-        {/* ==================================================== */}
-        {activeTab === 'laser-marking' && (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between pb-2 border-b border-industrial-800">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amberAccent/10 text-amberAccent border border-amberAccent/30">
-                    CONSOLE MODULE 02
-                  </span>
-                  <span className="text-xs font-mono text-industrial-400">
-                    QR-TO-G-CODE PIPELINE & LASER MARKING SIMULATION
-                  </span>
-                </div>
-                <h2 className="text-2xl font-bold text-white tracking-wide">
-                  Laser Toolpath Generation & Real-Time Ablation
-                </h2>
+            {/* PART A: 3D CNC WORKSTATION & INSPECTION COLUMN */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-xs font-mono text-industrial-400">
+                <span className="flex items-center gap-1.5 font-bold text-cyanAccent uppercase">
+                  <span>STAGE 1:</span> 3D DIGITAL TWIN & REAL-TIME MACHINE HEAD
+                </span>
+                <span>Active Specimen: <strong className="text-white">{activeComponent.category}</strong></span>
               </div>
-
-              <button
-                onClick={() => setActiveTab('3d-workstation')}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-industrial-850 hover:bg-industrial-800 text-xs font-mono text-cyanAccent border border-cyanAccent/30 transition"
-              >
-                <Layers className="w-3.5 h-3.5" />
-                <span>VIEW IN 3D WORKSTATION ➔</span>
-              </button>
+              <MachineViewer
+                isSimulatingMarking={isSimulatingMarking}
+                markingProgress={markingProgress}
+                selectedSubsystemId={selectedSubsystemId}
+                onSelectSubsystem={(sub) => setSelectedSubsystemId(sub ? sub.id : null)}
+                componentCategory={activeComponent.category}
+                currentCoord={markingCoord}
+              />
             </div>
 
-            <MarkingWorkflow
-              activeComponent={activeComponent}
-              setActiveComponent={setActiveComponent}
-              onSimulationStateChange={handleSimulationStateChange}
-              onComponentMarked={(comp) => {
-                componentRegistry.save(comp);
-                setActiveComponent(comp);
-              }}
-            />
+            {/* PART B: QR GENERATION & LASER SIMULATOR */}
+            <div className="space-y-2 pt-2">
+              <div className="flex items-center justify-between text-xs font-mono text-industrial-400">
+                <span className="flex items-center gap-1.5 font-bold text-amberAccent uppercase">
+                  <span>STAGE 2:</span> QR GENERATION → G-CODE RASTER → OPERATIONAL CONTROLS
+                </span>
+                <span className="text-industrial-500">GRBL_ESP32 Motion Controller</span>
+              </div>
+              <MarkingWorkflow
+                activeComponent={activeComponent}
+                setActiveComponent={setActiveComponent}
+                onSimulationStateChange={handleSimulationStateChange}
+                onComponentMarked={(comp) => {
+                  componentRegistry.save(comp);
+                  setActiveComponent(comp);
+                }}
+              />
+            </div>
           </div>
         )}
 
@@ -329,9 +317,8 @@ export function App() {
         {activeTab === 'tic-overview' && (
           <div className="space-y-12">
             <HeroSection
-              onScrollToSection={(sec) => {
-                if (sec === 'machine-3d') setActiveTab('3d-workstation');
-                else if (sec === 'marking-sim') setActiveTab('laser-marking');
+              onScrollToSection={() => {
+                setActiveTab('workstation-simulator');
               }}
               onRunSimulation={handleRunSimulation}
             />

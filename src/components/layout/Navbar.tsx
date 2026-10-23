@@ -16,8 +16,7 @@ import { ProjectLogo } from './ProjectLogo';
 import type { HardwareBridgeConfig } from '../../types';
 
 export type NavigationTab = 
-  | '3d-workstation'
-  | 'laser-marking'
+  | 'workstation-simulator'
   | 'field-scanner'
   | 'ai-analytics'
   | 'architecture'
@@ -43,8 +42,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const tabs: { id: NavigationTab; label: string; icon: React.ReactNode }[] = [
-    { id: '3d-workstation', label: '3D Workstation', icon: <Layers className="w-3.5 h-3.5" /> },
-    { id: 'laser-marking', label: 'Marking Simulator', icon: <Zap className="w-3.5 h-3.5" /> },
+    { id: 'workstation-simulator', label: '3D Workstation & Simulator', icon: <Layers className="w-3.5 h-3.5" /> },
     { id: 'field-scanner', label: 'Offline Scanner', icon: <QrCode className="w-3.5 h-3.5" /> },
     { id: 'ai-analytics', label: 'AI Analytics', icon: <BrainCircuit className="w-3.5 h-3.5" /> },
     { id: 'architecture', label: 'Architecture', icon: <Cpu className="w-3.5 h-3.5" /> },

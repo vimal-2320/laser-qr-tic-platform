@@ -609,16 +609,15 @@ export const MarkingWorkflow: React.FC<MarkingWorkflowProps> = ({
 
             {/* Live 3D Workstation Sync Indicator */}
             {isPlaying && (
-              <a
-                href="#machine-3d"
-                className="flex items-center justify-between p-2 rounded-lg bg-red-500/10 border border-red-500/30 text-[11px] font-mono text-red-300 hover:bg-red-500/20 transition"
+              <div
+                className="flex items-center justify-between p-2 rounded-lg bg-red-500/10 border border-red-500/30 text-[11px] font-mono text-red-300 animate-pulse"
               >
                 <span className="flex items-center gap-1.5">
-                  <Flame className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
-                  <span>3D Workstation laser & sparks active</span>
+                  <Flame className="w-3.5 h-3.5 text-amber-400 animate-bounce" />
+                  <span>3D Workstation firing sparks above in real time</span>
                 </span>
-                <span className="text-cyanAccent underline">View 3D Workstation ➔</span>
-              </a>
+                <span className="text-cyanAccent font-bold">Look Above ↑</span>
+              </div>
             )}
 
             {/* Speed Selector */}
