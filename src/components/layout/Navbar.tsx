@@ -1,64 +1,67 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
-  Cpu, 
-  Layers, 
   Zap, 
   QrCode, 
+  Layers, 
+  Cpu, 
   BrainCircuit, 
   Calendar, 
-  Users, 
-  Radio, 
+  FileText, 
+  WifiOff,
   Menu, 
   X,
-  ExternalLink
+  Radio
 } from 'lucide-react';
 import type { HardwareBridgeConfig } from '../../types';
 
+export type NavigationTab = 
+  | '3d-workstation'
+  | 'laser-marking'
+  | 'field-scanner'
+  | 'ai-analytics'
+  | 'architecture'
+  | 'roadmap-budget'
+  | 'tic-overview';
+
 interface NavbarProps {
+  activeTab: NavigationTab;
+  onSelectTab: (tab: NavigationTab) => void;
   onOpenScanner: () => void;
   onOpenHardwareModal: () => void;
   hardwareConfig: HardwareBridgeConfig;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
+  activeTab,
+  onSelectTab,
   onOpenScanner,
   onOpenHardwareModal,
   hardwareConfig
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 40);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const navLinks = [
-    { label: 'Problem & Context', href: '#problem' },
-    { label: 'Solution Pillars', href: '#solution' },
-    { label: '3D Digital Twin', href: '#machine-3d' },
-    { label: 'Marking Simulator', href: '#marking-sim' },
-    { label: 'Digital Record', href: '#traceability' },
-    { label: 'AI Analytics', href: '#ai-analytics' },
-    { label: 'Architecture', href: '#architecture' },
-    { label: 'Roadmap & Budget', href: '#roadmap' },
-    { label: 'Team', href: '#team' }
+  const tabs: { id: NavigationTab; label: string; icon: React.ReactNode }[] = [
+    { id: '3d-workstation', label: '3D Workstation', icon: <Layers className="w-3.5 h-3.5" /> },
+    { id: 'laser-marking', label: 'Marking Simulator', icon: <Zap className="w-3.5 h-3.5" /> },
+    { id: 'field-scanner', label: 'Offline Scanner', icon: <QrCode className="w-3.5 h-3.5" /> },
+    { id: 'ai-analytics', label: 'AI Analytics', icon: <BrainCircuit className="w-3.5 h-3.5" /> },
+    { id: 'architecture', label: 'Architecture', icon: <Cpu className="w-3.5 h-3.5" /> },
+    { id: 'roadmap-budget', label: 'Budget & Roadmap', icon: <Calendar className="w-3.5 h-3.5" /> },
+    { id: 'tic-overview', label: 'TIC Overview', icon: <FileText className="w-3.5 h-3.5" /> },
   ];
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
-      scrolled 
-        ? 'bg-industrial-950/90 backdrop-blur-md border-b border-industrial-800 shadow-xl py-3' 
-        : 'bg-transparent py-5'
-    }`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-        {/* Brand / Logo */}
-        <a href="#" className="flex items-center gap-3 group">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyanAccent to-blue-600 flex items-center justify-center shadow-cyan-glow group-hover:scale-105 transition-transform">
-            <Zap className="w-5 h-5 text-black font-bold fill-current" />
+    <header className="sticky top-0 z-40 bg-industrial-950/95 backdrop-blur-md border-b border-industrial-800 shadow-xl">
+      {/* Top Header Bar */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
+        {/* Brand with KEC College Logo */}
+        <div className="flex items-center gap-3">
+          <div className="bg-white p-1 rounded-lg border border-industrial-700 shadow-md flex items-center justify-center shrink-0">
+            <img 
+              src="/assets/kec_logo.png" 
+              alt="Kongu Engineering College" 
+              className="h-9 w-auto object-contain"
+            />
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -70,30 +73,16 @@ export const Navbar: React.FC<NavbarProps> = ({
               </span>
             </div>
             <p className="text-[10px] text-industrial-400 font-mono tracking-tight hidden sm:block">
-              Kongu Engineering College • SASTRA-TCS TIC
+              Kongu Engineering College (Autonomous) • SASTRA-TCS TIC
             </p>
           </div>
-        </a>
+        </div>
 
-        {/* Desktop Nav Links */}
-        <nav className="hidden xl:flex items-center gap-5 text-xs font-mono text-industrial-300">
-          {navLinks.map((link, idx) => (
-            <a
-              key={idx}
-              href={link.href}
-              className="hover:text-cyanAccent transition-colors py-1"
-            >
-              {link.label}
-            </a>
-          ))}
-        </nav>
-
-        {/* Action Controls: Mode Pill & Scanner Button */}
-        <div className="flex items-center gap-3">
-          {/* Operating Mode Status Pill */}
+        {/* Action Controls: Operating Mode & Offline Scanner Shortcut */}
+        <div className="flex items-center gap-2.5">
           <button
             onClick={onOpenHardwareModal}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-mono transition ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-mono transition ${
               hardwareConfig.mode === 'SIMULATION'
                 ? 'bg-industrial-900 border-cyanAccent/40 text-cyanAccent hover:bg-industrial-850'
                 : hardwareConfig.connected
@@ -108,42 +97,68 @@ export const Navbar: React.FC<NavbarProps> = ({
                 ? 'bg-emerald-400'
                 : 'bg-amber-400 animate-ping'
             }`} />
-            <span className="hidden sm:inline">
+            <span className="hidden md:inline">
               {hardwareConfig.mode === 'SIMULATION' ? 'SIMULATION MODE' : hardwareConfig.connected ? 'LIVE CONNECTED' : 'LIVE DISCONNECTED'}
             </span>
           </button>
 
-          {/* Quick Scanner Action */}
           <button
-            onClick={onOpenScanner}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-cyanAccent text-black text-xs font-mono font-bold hover:bg-cyan-300 transition shadow-cyan-glow"
+            onClick={() => onSelectTab('field-scanner')}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyanAccent text-black text-xs font-mono font-bold hover:bg-cyan-300 transition shadow-cyan-glow"
           >
             <QrCode className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">SCAN QR</span>
+            <span className="hidden sm:inline">OFFLINE SCAN</span>
           </button>
 
-          {/* Mobile hamburger toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="xl:hidden p-1.5 text-industrial-300 hover:text-white rounded-lg hover:bg-industrial-800"
           >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Nav Drawer */}
+      {/* Industrial Workstation Module Tab Bar */}
+      <div className="bg-industrial-900 border-t border-industrial-800/80 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto flex items-center justify-start sm:justify-center overflow-x-auto gap-1 py-1.5 scrollbar-none">
+          {tabs.map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => onSelectTab(tab.id)}
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-mono transition-all whitespace-nowrap shrink-0 ${
+                  isActive
+                    ? 'bg-industrial-950 text-cyanAccent font-bold border border-cyanAccent/50 shadow-cyan-glow'
+                    : 'text-industrial-300 hover:text-white hover:bg-industrial-850/80'
+                }`}
+              >
+                {tab.icon}
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Mobile Navigation Drawer */}
       {mobileMenuOpen && (
-        <div className="xl:hidden bg-industrial-950/98 border-b border-industrial-800 px-4 py-4 space-y-2 text-xs font-mono shadow-2xl">
-          {navLinks.map((link, idx) => (
-            <a
-              key={idx}
-              href={link.href}
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-industrial-300 hover:text-cyanAccent border-b border-industrial-900 last:border-none"
+        <div className="xl:hidden bg-industrial-950 border-b border-industrial-800 px-4 py-3 space-y-1 text-xs font-mono">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => {
+                onSelectTab(tab.id);
+                setMobileMenuOpen(false);
+              }}
+              className={`w-full flex items-center gap-2 px-3 py-2 rounded text-left transition ${
+                activeTab === tab.id ? 'bg-cyanAccent/10 text-cyanAccent font-bold' : 'text-industrial-300'
+              }`}
             >
-              {link.label}
-            </a>
+              {tab.icon}
+              <span>{tab.label}</span>
+            </button>
           ))}
         </div>
       )}

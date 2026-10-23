@@ -1,26 +1,38 @@
 import React from 'react';
 import { PROJECT_METADATA } from '../../data/mockData';
-import { ExternalLink, ShieldAlert, Cpu, Heart } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="bg-industrial-950 border-t border-industrial-800 pt-12 pb-8 text-industrial-400 text-xs">
+    <footer className="bg-industrial-950 border-t border-industrial-800 pt-10 pb-8 text-industrial-400 text-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
-          {/* Col 1: Project Identity */}
+          {/* Col 1: Project Identity & KEC Logo */}
           <div className="md:col-span-5 space-y-3">
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-cyanAccent" />
-              <h4 className="text-sm font-bold font-mono text-white tracking-wide uppercase">
-                {PROJECT_METADATA.shortTitle}
-              </h4>
+            <div className="flex items-center gap-3">
+              <div className="bg-white p-1 rounded-lg border border-industrial-700 shadow-md">
+                <img 
+                  src="/assets/kec_logo.png" 
+                  alt="Kongu Engineering College Logo" 
+                  className="h-10 w-auto object-contain"
+                />
+              </div>
+              <div>
+                <h4 className="text-sm font-bold font-mono text-white tracking-wide uppercase">
+                  {PROJECT_METADATA.shortTitle}
+                </h4>
+                <p className="text-[10px] text-cyanAccent font-mono">
+                  {PROJECT_METADATA.department}
+                </p>
+              </div>
             </div>
+
             <p className="text-xs text-industrial-300 leading-relaxed max-w-md">
               {PROJECT_METADATA.subtitle}
             </p>
+
             <div className="text-[11px] font-mono text-industrial-400 space-y-1">
-              <div>Institution: <strong className="text-industrial-200">{PROJECT_METADATA.institution}</strong></div>
-              <div>Department: {PROJECT_METADATA.department}</div>
+              <div>Institution: <strong className="text-industrial-200">{PROJECT_METADATA.institution} (Autonomous)</strong></div>
               <div>Principal Investigator: <strong className="text-industrial-200">{PROJECT_METADATA.pi.name}</strong></div>
               <div>Student Team: Vimal PK (Lead), Naveena R, Tamilarasu M</div>
             </div>
@@ -83,11 +95,16 @@ export const Footer: React.FC = () => {
 
         {/* Bottom copyright & attribution */}
         <div className="pt-6 border-t border-industrial-900 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-[11px] font-mono text-industrial-500">
-          <div>
-            © {new Date().getFullYear()} Kongu Engineering College — SASTRA–TCS Technology Innovation Centre (TIC) Submission.
+          <div className="flex items-center gap-2">
+            <img 
+              src="/assets/kec_logo.png" 
+              alt="KEC" 
+              className="h-5 w-auto bg-white p-0.5 rounded"
+            />
+            <span>© {new Date().getFullYear()} Kongu Engineering College — SASTRA–TCS Technology Innovation Centre (TIC) Submission.</span>
           </div>
-          <div>
-            Domain: Artificial Intelligence • Funding Ask: ₹50,00,000 • 18 Months
+          <div className="text-cyanAccent font-semibold text-xs tracking-wide">
+            Made and developed by Vimal PK
           </div>
         </div>
       </div>

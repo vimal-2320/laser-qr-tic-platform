@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Navbar } from './components/layout/Navbar';
+import { Navbar, type NavigationTab } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
 import { HeroSection, ProblemSection, SolutionSection } from './components/journey/JourneySections';
 import { MachineViewer } from './components/3d/MachineViewer';
@@ -18,14 +18,19 @@ import {
   QrCode, 
   Layers, 
   Zap, 
-  Activity, 
-  ShieldCheck, 
-  HelpCircle,
-  ExternalLink,
-  ChevronDown
+  WifiOff, 
+  CheckCircle2, 
+  ArrowRight,
+  ShieldCheck,
+  Cpu,
+  Flame,
+  FileCheck
 } from 'lucide-react';
 
 export function App() {
+  // Navigation Tab State (Replaces endless vertical scrolling)
+  const [activeTab, setActiveTab] = useState<NavigationTab>('3d-workstation');
+
   // Shared active demo component record
   const [activeComponent, setActiveComponent] = useState<ComponentRecord>(INITIAL_DEMO_COMPONENTS[0]);
 
@@ -40,14 +45,8 @@ export function App() {
   const [isHardwareModalOpen, setIsHardwareModalOpen] = useState<boolean>(false);
   const [hardwareConfig, setHardwareConfig] = useState<HardwareBridgeConfig>(hardwareAdapter.getConfig());
 
-  const handleScrollToSection = (id: string) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
   const handleRunSimulation = () => {
+    setActiveTab('laser-marking');
     setIsSimulatingMarking(true);
   };
 
@@ -65,140 +64,264 @@ export function App() {
     componentRegistry.save(record);
     setActiveComponent(record);
     setIsScannerOpen(false);
-    handleScrollToSection('traceability');
+    setActiveTab('field-scanner');
   };
 
   return (
-    <div className="min-h-screen bg-industrial-950 text-industrial-200 selection:bg-cyanAccent selection:text-black">
-      {/* Top Navbar */}
+    <div className="min-h-screen bg-industrial-950 text-industrial-200 selection:bg-cyanAccent selection:text-black flex flex-col justify-between">
+      {/* Top Navbar with Tab Navigation & KEC Logo */}
       <Navbar
+        activeTab={activeTab}
+        onSelectTab={setActiveTab}
         onOpenScanner={() => setIsScannerOpen(true)}
         onOpenHardwareModal={() => setIsHardwareModalOpen(true)}
         hardwareConfig={hardwareConfig}
       />
 
-      {/* 1. Hero Section */}
-      <HeroSection
-        onScrollToSection={handleScrollToSection}
-        onRunSimulation={handleRunSimulation}
-      />
-
-      {/* 2. Industrial Problem Section */}
-      <ProblemSection />
-
-      {/* 3. Proposed Solution Section */}
-      <SolutionSection />
-
-      {/* 4. Dedicated 3D Interactive Machine Digital Twin Section */}
-      <section id="machine-3d" className="py-20 border-t border-industrial-800 bg-industrial-950 relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyanAccent/10 text-cyanAccent border border-cyanAccent/30">
-                  SECTION 04 • 3D DIGITAL TWIN
-                </span>
-                <span className="text-xs font-mono text-industrial-400">
-                  WEBGL CAD VISUALIZATION
-                </span>
+      {/* Main Console Workstation Body */}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        
+        {/* ==================================================== */}
+        {/* TAB 1: 3D DIGITAL TWIN & INSPECTION WORKSTATION */}
+        {/* ==================================================== */}
+        {activeTab === '3d-workstation' && (
+          <div className="space-y-6">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2 border-b border-industrial-800">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyanAccent/10 text-cyanAccent border border-cyanAccent/30">
+                    CONSOLE MODULE 01
+                  </span>
+                  <span className="text-xs font-mono text-industrial-400">
+                    INTERACTIVE 3D CNC WORKSTATION & SUBSYSTEM INSPECTOR
+                  </span>
+                </div>
+                <h2 className="text-2xl font-bold text-white tracking-wide">
+                  Desktop CNC Laser Marking Workstation
+                </h2>
+                <p className="text-xs text-industrial-300 mt-0.5">
+                  Inspect the rigid chassis, linear motion rods, ESP32 controller, and dynamic 3D track fittings with live spark emission during engraving runs.
+                </p>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-                Interactive 3D CNC Laser Marking Workstation
-              </h2>
-              <p className="text-xs sm:text-sm text-industrial-300 mt-1 max-w-2xl leading-relaxed">
-                Inspect the structural gantry, ESP32 motion electronics, laser optics, and railway fitting fixture in full 3D space. Toggle between assembled and exploded perspectives.
-              </p>
+
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setActiveTab('laser-marking')}
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-cyanAccent text-black font-mono font-bold text-xs hover:bg-cyan-300 transition shadow-cyan-glow"
+                >
+                  <Zap className="w-4 h-4 fill-current" />
+                  <span>LAUNCH ENGRAVING SIMULATOR ➔</span>
+                </button>
+              </div>
             </div>
 
-            <div className="flex items-center gap-2 text-xs font-mono text-industrial-400">
-              <span className="w-2 h-2 rounded-full bg-emerald-400" />
-              <span>TRL 3 Laboratory Architecture Model</span>
-            </div>
+            {/* 3D Scene + Dedicated Inspection Column Component */}
+            <MachineViewer
+              isSimulatingMarking={isSimulatingMarking}
+              markingProgress={markingProgress}
+              selectedSubsystemId={selectedSubsystemId}
+              onSelectSubsystem={(sub) => setSelectedSubsystemId(sub ? sub.id : null)}
+              componentCategory={activeComponent.category}
+              currentCoord={markingCoord}
+            />
           </div>
+        )}
 
-          {/* 3D Scene Component */}
-          <MachineViewer
-            isSimulatingMarking={isSimulatingMarking}
-            markingProgress={markingProgress}
-            selectedSubsystemId={selectedSubsystemId}
-            onSelectSubsystem={(sub) => setSelectedSubsystemId(sub ? sub.id : null)}
-            componentCategory={activeComponent.category}
-            currentCoord={markingCoord}
-          />
-        </div>
-      </section>
+        {/* ==================================================== */}
+        {/* TAB 2: LASER MARKING & G-CODE SIMULATOR */}
+        {/* ==================================================== */}
+        {activeTab === 'laser-marking' && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between pb-2 border-b border-industrial-800">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amberAccent/10 text-amberAccent border border-amberAccent/30">
+                    CONSOLE MODULE 02
+                  </span>
+                  <span className="text-xs font-mono text-industrial-400">
+                    QR-TO-G-CODE PIPELINE & LASER MARKING SIMULATION
+                  </span>
+                </div>
+                <h2 className="text-2xl font-bold text-white tracking-wide">
+                  Laser Toolpath Generation & Real-Time Ablation
+                </h2>
+              </div>
 
-      {/* 5. Laser Marking & G-Code Workflow Section */}
-      <section id="marking-sim" className="py-20 border-t border-industrial-800 bg-industrial-900/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-          <MarkingWorkflow
-            activeComponent={activeComponent}
-            setActiveComponent={setActiveComponent}
-            onSimulationStateChange={handleSimulationStateChange}
-            onComponentMarked={(comp) => {
-              componentRegistry.save(comp);
-              setActiveComponent(comp);
-            }}
-          />
-        </div>
-      </section>
+              <button
+                onClick={() => setActiveTab('3d-workstation')}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-industrial-850 hover:bg-industrial-800 text-xs font-mono text-cyanAccent border border-cyanAccent/30 transition"
+              >
+                <Layers className="w-3.5 h-3.5" />
+                <span>VIEW IN 3D WORKSTATION ➔</span>
+              </button>
+            </div>
 
-      {/* 6. Digital Traceability & Component Record Section */}
-      <section id="traceability" className="py-20 border-t border-industrial-800 bg-industrial-950">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
+            <MarkingWorkflow
+              activeComponent={activeComponent}
+              setActiveComponent={setActiveComponent}
+              onSimulationStateChange={handleSimulationStateChange}
+              onComponentMarked={(comp) => {
+                componentRegistry.save(comp);
+                setActiveComponent(comp);
+              }}
+            />
+          </div>
+        )}
+
+        {/* ==================================================== */}
+        {/* TAB 3: OFFLINE FIELD SCANNER & DIGITAL ASSET RECORD */}
+        {/* ==================================================== */}
+        {activeTab === 'field-scanner' && (
+          <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-industrial-800">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
+                    <WifiOff className="w-3 h-3" /> OFFLINE-FIRST FIELD MODULE
+                  </span>
+                  <span className="text-xs font-mono text-industrial-400">
+                    LOCAL CLIENT-SIDE OPTICAL DECODING & ASSET LEDGER
+                  </span>
+                </div>
+                <h2 className="text-2xl font-bold text-white tracking-wide">
+                  Mobile QR Scanning & Track Fitting Digital Record
+                </h2>
+              </div>
+
+              <button
+                onClick={() => setIsScannerOpen(true)}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cyanAccent text-black text-xs font-mono font-bold hover:bg-cyan-300 transition shadow-cyan-glow"
+              >
+                <QrCode className="w-4 h-4" />
+                <span>OPEN OFFLINE SCANNER (WEBCAM / FILE)</span>
+              </button>
+            </div>
+
+            {/* Offline Architecture Explanation Banner */}
+            <div className="bg-industrial-900 border border-emerald-500/30 rounded-2xl p-5 shadow-xl space-y-3">
+              <div className="flex items-center gap-2 text-emerald-400 text-sm font-bold font-mono">
+                <ShieldCheck className="w-4 h-4" />
+                <span>HOW THE OFFLINE-FIRST SCANNER OPERATES WITHOUT INTERNET:</span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs text-industrial-300">
+                <div className="bg-industrial-950 p-3 rounded-lg border border-industrial-800 space-y-1">
+                  <span className="text-cyanAccent font-mono font-bold block">1. Client-Side WASM/Canvas</span>
+                  <p className="leading-relaxed">
+                    Camera video frames and image files are processed directly inside your browser memory using an in-memory HTML5 Canvas and the <strong className="text-white">jsQR</strong> library. Zero image pixels are sent across the network.
+                  </p>
+                </div>
+                <div className="bg-industrial-950 p-3 rounded-lg border border-industrial-800 space-y-1">
+                  <span className="text-cyanAccent font-mono font-bold block">2. Local Storage Ledger</span>
+                  <p className="leading-relaxed">
+                    Component data and newly discovered track fittings are stored directly in <strong className="text-white">localStorage</strong>. The scanner functions reliably in remote railway tunnels and desert corridors with zero network coverage.
+                  </p>
+                </div>
+                <div className="bg-industrial-950 p-3 rounded-lg border border-industrial-800 space-y-1">
+                  <span className="text-cyanAccent font-mono font-bold block">3. Deferred UDM/TMS Sync</span>
+                  <p className="leading-relaxed">
+                    Scan events, inspections, and GPS coordinates are stamped and tagged as <strong className="text-amber-400 font-mono">"Offline Cached"</strong>. Once the mobile device reconnects to depot Wi-Fi, records automatically synchronize to Indian Railways portals.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Active Component Digital Twin Record Card */}
+            <ComponentRecordCard record={activeComponent} />
+          </div>
+        )}
+
+        {/* ==================================================== */}
+        {/* TAB 4: AI LIFECYCLE ANALYTICS & PREDICTIVE ENGINE */}
+        {/* ==================================================== */}
+        {activeTab === 'ai-analytics' && (
+          <div className="space-y-6">
+            <div className="pb-2 border-b border-industrial-800">
               <div className="flex items-center gap-2 mb-1">
                 <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyanAccent/10 text-cyanAccent border border-cyanAccent/30">
-                  SECTION 06 • DIGITAL LIFECYCLE
+                  CONSOLE MODULE 04
                 </span>
                 <span className="text-xs font-mono text-industrial-400">
-                  PROVENANCE & AUDIT TRAIL
+                  EDGE-AI PREDICTIVE MAINTENANCE & COUNTERFEIT DETECTION
                 </span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-                Component Digital Record & Track History
+              <h2 className="text-2xl font-bold text-white tracking-wide">
+                AI Component Lifecycle Intelligence
               </h2>
             </div>
 
-            <button
-              onClick={() => setIsScannerOpen(true)}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-industrial-850 hover:bg-industrial-800 text-cyanAccent border border-cyanAccent/40 text-xs font-mono font-bold transition shadow-cyan-glow"
-            >
-              <QrCode className="w-4 h-4" />
-              <span>SCAN / DECODE NEW SPECIMEN</span>
-            </button>
+            <AnalyticsEngine component={activeComponent} />
           </div>
+        )}
 
-          <ComponentRecordCard record={activeComponent} />
-        </div>
-      </section>
+        {/* ==================================================== */}
+        {/* TAB 5: SYSTEM ARCHITECTURE & DATA FLOW */}
+        {/* ==================================================== */}
+        {activeTab === 'architecture' && (
+          <div className="space-y-6">
+            <div className="pb-2 border-b border-industrial-800">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyanAccent/10 text-cyanAccent border border-cyanAccent/30">
+                  CONSOLE MODULE 05
+                </span>
+                <span className="text-xs font-mono text-industrial-400">
+                  6-LAYER CYBER-PHYSICAL INTEROPERABILITY SPECIFICATION
+                </span>
+              </div>
+              <h2 className="text-2xl font-bold text-white tracking-wide">
+                End-to-End System Architecture
+              </h2>
+            </div>
 
-      {/* 7. AI-Assisted Maintenance & Anomaly Analytics */}
-      <section id="ai-analytics" className="py-20 border-t border-industrial-800 bg-industrial-900/40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-          <AnalyticsEngine component={activeComponent} />
-        </div>
-      </section>
+            <ArchitectureDiagram />
+          </div>
+        )}
 
-      {/* 8. System Architecture & Data Flow */}
-      <section id="architecture" className="py-20 border-t border-industrial-800 bg-industrial-950">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-          <ArchitectureDiagram />
-        </div>
-      </section>
+        {/* ==================================================== */}
+        {/* TAB 6: ROADMAP, BUDGET & INVESTIGATOR TEAM */}
+        {/* ==================================================== */}
+        {activeTab === 'roadmap-budget' && (
+          <div className="space-y-6">
+            <div className="pb-2 border-b border-industrial-800">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amberAccent/10 text-amberAccent border border-amberAccent/30">
+                  CONSOLE MODULE 06
+                </span>
+                <span className="text-xs font-mono text-industrial-400">
+                  SASTRA – TCS TIC FINANCIAL ALLOCATION & 18-MONTH PLAN
+                </span>
+              </div>
+              <h2 className="text-2xl font-bold text-white tracking-wide">
+                Project Budget, Milestones & Research Team
+              </h2>
+            </div>
 
-      {/* 9. Funding Breakdown, 18-Month Roadmap & Team */}
-      <section id="roadmap" className="py-20 border-t border-industrial-800 bg-industrial-900/40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-          <RoadmapBudget />
-        </div>
-      </section>
+            <RoadmapBudget />
+          </div>
+        )}
 
-      {/* Footer */}
+        {/* ==================================================== */}
+        {/* TAB 7: TIC EXECUTIVE OVERVIEW & POSTER */}
+        {/* ==================================================== */}
+        {activeTab === 'tic-overview' && (
+          <div className="space-y-12">
+            <HeroSection
+              onScrollToSection={(sec) => {
+                if (sec === 'machine-3d') setActiveTab('3d-workstation');
+                else if (sec === 'marking-sim') setActiveTab('laser-marking');
+              }}
+              onRunSimulation={handleRunSimulation}
+            />
+            <ProblemSection />
+            <SolutionSection />
+          </div>
+        )}
+
+      </main>
+
+      {/* Footer with College Logo and requested developer attribution */}
       <Footer />
 
-      {/* Floating Scanner Modal */}
+      {/* Floating Offline Scanner Modal */}
       <ScannerModal
         isOpen={isScannerOpen}
         onClose={() => setIsScannerOpen(false)}
