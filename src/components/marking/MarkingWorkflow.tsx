@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 
 interface MarkingWorkflowProps {
-  onSimulationStateChange?: (isSimulating: boolean, progress: number) => void;
+  onSimulationStateChange?: (isSimulating: boolean, progress: number, currentCoord?: { x: number; y: number; laserActive: boolean } | null) => void;
   onComponentMarked?: (component: ComponentRecord) => void;
   activeComponent: ComponentRecord;
   setActiveComponent: (comp: ComponentRecord) => void;
@@ -114,9 +114,11 @@ export const MarkingWorkflow: React.FC<MarkingWorkflowProps> = ({
   // Sync simulation state with parent (and 3D machine viewer)
   useEffect(() => {
     if (onSimulationStateChange) {
-      onSimulationStateChange(isPlaying, simProgress);
+      const seg = gcodeResult?.segments[activeSegmentIndex];
+      const coord = seg ? { x: seg.endX, y: seg.endY, laserActive: seg.laserActive } : null;
+      onSimulationStateChange(isPlaying, simProgress, coord);
     }
-  }, [isPlaying, simProgress, onSimulationStateChange]);
+  }, [isPlaying, simProgress, activeSegmentIndex, gcodeResult, onSimulationStateChange]);
 
   // Simulation tick loop
   useEffect(() => {
@@ -376,7 +378,11 @@ export const MarkingWorkflow: React.FC<MarkingWorkflowProps> = ({
               <label className="text-[11px] font-mono text-industrial-400 block mb-1">EQUIPMENT CATEGORY</label>
               <select
                 value={category}
-                onChange={(e) => setCategory(e.target.value as any)}
+                onChange={(e) => {
+                  const newCat = e.target.value as any;
+                  setCategory(newCat);
+                  setActiveComponent({ ...activeComponent, category: newCat });
+                }}
                 className="w-full bg-industrial-900 border border-industrial-700 rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-cyanAccent"
               >
                 <option value="Elastic Rail Clip (ERC-III)">Elastic Rail Clip (ERC-III)</option>
@@ -600,6 +606,20 @@ export const MarkingWorkflow: React.FC<MarkingWorkflowProps> = ({
                 <FastForward className="w-4 h-4" />
               </button>
             </div>
+
+            {/* Live 3D Workstation Sync Indicator */}
+            {isPlaying && (
+              <a
+                href="#machine-3d"
+                className="flex items-center justify-between p-2 rounded-lg bg-red-500/10 border border-red-500/30 text-[11px] font-mono text-red-300 hover:bg-red-500/20 transition"
+              >
+                <span className="flex items-center gap-1.5">
+                  <Flame className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
+                  <span>3D Workstation laser & sparks active</span>
+                </span>
+                <span className="text-cyanAccent underline">View 3D Workstation ➔</span>
+              </a>
+            )}
 
             {/* Speed Selector */}
             <div className="flex items-center justify-between pt-1">

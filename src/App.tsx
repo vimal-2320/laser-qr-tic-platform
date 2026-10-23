@@ -32,6 +32,7 @@ export function App() {
   // Synchronized simulation states between MarkingWorkflow and 3D Machine Viewer
   const [isSimulatingMarking, setIsSimulatingMarking] = useState<boolean>(false);
   const [markingProgress, setMarkingProgress] = useState<number>(0);
+  const [markingCoord, setMarkingCoord] = useState<{ x: number; y: number; laserActive: boolean } | null>(null);
   const [selectedSubsystemId, setSelectedSubsystemId] = useState<string | null>(null);
 
   // Modals
@@ -50,9 +51,14 @@ export function App() {
     setIsSimulatingMarking(true);
   };
 
-  const handleSimulationStateChange = (isSimulating: boolean, progress: number) => {
+  const handleSimulationStateChange = (
+    isSimulating: boolean,
+    progress: number,
+    coord?: { x: number; y: number; laserActive: boolean } | null
+  ) => {
     setIsSimulatingMarking(isSimulating);
     setMarkingProgress(progress);
+    setMarkingCoord(coord || null);
   };
 
   const handleRecordFound = (record: ComponentRecord) => {
@@ -116,6 +122,8 @@ export function App() {
             markingProgress={markingProgress}
             selectedSubsystemId={selectedSubsystemId}
             onSelectSubsystem={(sub) => setSelectedSubsystemId(sub ? sub.id : null)}
+            componentCategory={activeComponent.category}
+            currentCoord={markingCoord}
           />
         </div>
       </section>
