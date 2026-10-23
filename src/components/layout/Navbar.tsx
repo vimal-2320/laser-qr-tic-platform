@@ -7,11 +7,12 @@ import {
   BrainCircuit, 
   Calendar, 
   FileText, 
-  WifiOff,
+  Users,
   Menu, 
   X,
   Radio
 } from 'lucide-react';
+import { ProjectLogo } from './ProjectLogo';
 import type { HardwareBridgeConfig } from '../../types';
 
 export type NavigationTab = 
@@ -20,7 +21,8 @@ export type NavigationTab =
   | 'field-scanner'
   | 'ai-analytics'
   | 'architecture'
-  | 'roadmap-budget'
+  | 'budget-roadmap'
+  | 'team'
   | 'tic-overview';
 
 interface NavbarProps {
@@ -46,7 +48,8 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'field-scanner', label: 'Offline Scanner', icon: <QrCode className="w-3.5 h-3.5" /> },
     { id: 'ai-analytics', label: 'AI Analytics', icon: <BrainCircuit className="w-3.5 h-3.5" /> },
     { id: 'architecture', label: 'Architecture', icon: <Cpu className="w-3.5 h-3.5" /> },
-    { id: 'roadmap-budget', label: 'Budget & Roadmap', icon: <Calendar className="w-3.5 h-3.5" /> },
+    { id: 'budget-roadmap', label: 'Budget & Roadmap', icon: <Calendar className="w-3.5 h-3.5" /> },
+    { id: 'team', label: 'Team Members', icon: <Users className="w-3.5 h-3.5" /> },
     { id: 'tic-overview', label: 'TIC Overview', icon: <FileText className="w-3.5 h-3.5" /> },
   ];
 
@@ -54,15 +57,9 @@ export const Navbar: React.FC<NavbarProps> = ({
     <header className="sticky top-0 z-40 bg-industrial-950/95 backdrop-blur-md border-b border-industrial-800 shadow-xl">
       {/* Top Header Bar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
-        {/* Brand with KEC College Logo */}
+        {/* Creative Project Logo & Title */}
         <div className="flex items-center gap-3">
-          <div className="bg-white p-1 rounded-lg border border-industrial-700 shadow-md flex items-center justify-center shrink-0">
-            <img 
-              src="/assets/kec_logo.png" 
-              alt="Kongu Engineering College" 
-              className="h-9 w-auto object-contain"
-            />
-          </div>
+          <ProjectLogo size={40} />
           <div>
             <div className="flex items-center gap-2">
               <span className="text-sm font-bold tracking-wider text-white font-mono">
@@ -73,7 +70,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               </span>
             </div>
             <p className="text-[10px] text-industrial-400 font-mono tracking-tight hidden sm:block">
-              Kongu Engineering College (Autonomous) • SASTRA-TCS TIC
+              Edge-AI Laser Marking Platform • TIC Prototype
             </p>
           </div>
         </div>

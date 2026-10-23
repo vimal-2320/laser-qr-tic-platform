@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { PROJECT_METADATA } from '../../data/mockData';
+import { ProjectLogo } from '../layout/ProjectLogo';
 import { 
   ShieldAlert, 
   AlertTriangle, 
@@ -31,15 +32,9 @@ export const HeroSection: React.FC<JourneySectionsProps> = ({ onScrollToSection,
       <div className="absolute top-1/3 right-10 w-[300px] h-[300px] bg-amberAccent/5 blur-[100px] rounded-full pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center space-y-6">
-        {/* College Logo Header */}
-        <div className="flex justify-center mb-2">
-          <div className="bg-white p-2 rounded-2xl border border-industrial-700 shadow-xl inline-flex items-center gap-3">
-            <img 
-              src="/assets/kec_logo.png" 
-              alt="Kongu Engineering College" 
-              className="h-12 w-auto object-contain"
-            />
-          </div>
+        {/* Creative Project Logo Header */}
+        <div className="flex justify-center mb-1">
+          <ProjectLogo size={64} />
         </div>
 
         {/* Top Badges */}

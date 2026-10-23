@@ -9,6 +9,7 @@ import { ScannerModal } from './components/scanner/ScannerModal';
 import { AnalyticsEngine } from './components/analytics/AnalyticsEngine';
 import { ArchitectureDiagram } from './components/architecture/ArchitectureDiagram';
 import { RoadmapBudget } from './components/roadmap/RoadmapBudget';
+import { TeamMembers } from './components/team/TeamMembers';
 import { HardwareModeModal } from './components/hardware/HardwareModeModal';
 import { INITIAL_DEMO_COMPONENTS } from './data/mockData';
 import { componentRegistry } from './services/componentRegistry';
@@ -277,9 +278,9 @@ export function App() {
         )}
 
         {/* ==================================================== */}
-        {/* TAB 6: ROADMAP, BUDGET & INVESTIGATOR TEAM */}
+        {/* TAB 6: ROADMAP & BUDGET */}
         {/* ==================================================== */}
-        {activeTab === 'roadmap-budget' && (
+        {activeTab === 'budget-roadmap' && (
           <div className="space-y-6">
             <div className="pb-2 border-b border-industrial-800">
               <div className="flex items-center gap-2 mb-1">
@@ -291,7 +292,7 @@ export function App() {
                 </span>
               </div>
               <h2 className="text-2xl font-bold text-white tracking-wide">
-                Project Budget, Milestones & Research Team
+                Project Budget & 18-Month Execution Roadmap
               </h2>
             </div>
 
@@ -300,7 +301,30 @@ export function App() {
         )}
 
         {/* ==================================================== */}
-        {/* TAB 7: TIC EXECUTIVE OVERVIEW & POSTER */}
+        {/* TAB 7: TEAM MEMBERS (DEDICATED KEC SECTION) */}
+        {/* ==================================================== */}
+        {activeTab === 'team' && (
+          <div className="space-y-6">
+            <div className="pb-2 border-b border-industrial-800">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyanAccent/10 text-cyanAccent border border-cyanAccent/30">
+                  CONSOLE MODULE 07
+                </span>
+                <span className="text-xs font-mono text-industrial-400">
+                  KONGU ENGINEERING COLLEGE RESEARCH & INNOVATION TEAM
+                </span>
+              </div>
+              <h2 className="text-2xl font-bold text-white tracking-wide">
+                Principal Investigator & Student Innovator Team
+              </h2>
+            </div>
+
+            <TeamMembers />
+          </div>
+        )}
+
+        {/* ==================================================== */}
+        {/* TAB 8: TIC EXECUTIVE OVERVIEW & POSTER */}
         {/* ==================================================== */}
         {activeTab === 'tic-overview' && (
           <div className="space-y-12">
