@@ -104,7 +104,7 @@ export const Footer: React.FC = () => {
             <span>© {new Date().getFullYear()} Kongu Engineering College — SASTRA–TCS Technology Innovation Centre (TIC) Submission.</span>
           </div>
           <div className="text-cyanAccent font-semibold text-xs tracking-wide">
-            Made and developed by Vimal PK
+            Made and developed by US
           </div>
         </div>
       </div>
